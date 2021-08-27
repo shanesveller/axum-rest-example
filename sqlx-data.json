@@ -1,7 +1,7 @@
 {
   "db": "PostgreSQL",
-  "105b4185d52a857ea6d42d74d326754e5a514b373facb97f09cb65d6c17a90fe": {
-    "query": "INSERT INTO links (id, destination)\n            VALUES ($1, $2)\n            RETURNING id, destination\n            ",
+  "23e708b95cd26e9b7561f3aee347267d3c5459f1fc6cee4cddceb6d440630a93": {
+    "query": "INSERT INTO links (id, destination, hash)\n            VALUES ($1, $2, $3)\n            RETURNING id, destination, hash\n            ",
     "describe": {
       "columns": [
         {
@@ -13,22 +13,29 @@
           "ordinal": 1,
           "name": "destination",
           "type_info": "Text"
+        },
+        {
+          "ordinal": 2,
+          "name": "hash",
+          "type_info": "Text"
         }
       ],
       "parameters": {
         "Left": [
           "Uuid",
+          "Text",
           "Text"
         ]
       },
       "nullable": [
         false,
+        false,
         false
       ]
     }
   },
-  "50b137c0102087855f2a810d3853a9ea9bc92f53983991b07226c9a8343f595b": {
-    "query": "SELECT id, destination FROM links ORDER BY destination",
+  "a456a1513e3fbe0f849f44720bbced7783201b6d0e8648ce48733c198cd655e2": {
+    "query": "SELECT id, destination, hash FROM links WHERE hash = $1",
     "describe": {
       "columns": [
         {
@@ -39,6 +46,43 @@
         {
           "ordinal": 1,
           "name": "destination",
+          "type_info": "Text"
+        },
+        {
+          "ordinal": 2,
+          "name": "hash",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "ccca6f2d58b00f20bc048325112bd0c3b064b113765af87c7b30a9d36c7f7eec": {
+    "query": "SELECT id, destination, hash FROM links ORDER BY destination",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Uuid"
+        },
+        {
+          "ordinal": 1,
+          "name": "destination",
+          "type_info": "Text"
+        },
+        {
+          "ordinal": 2,
+          "name": "hash",
           "type_info": "Text"
         }
       ],
@@ -46,6 +90,7 @@
         "Left": []
       },
       "nullable": [
+        false,
         false,
         false
       ]

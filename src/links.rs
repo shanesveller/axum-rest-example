@@ -13,7 +13,8 @@ pub(crate) struct NewLink {
 #[derive(Clone, Debug, PartialEq, Deserialize, FromRow, Serialize)]
 pub(crate) struct Link {
     id: Uuid,
-    destination: String,
+    hash: String,
+    pub(crate) destination: String,
 }
 
 #[derive(Debug, thiserror::Error, Serialize)]
@@ -35,8 +36,16 @@ impl TryFrom<NewLink> for Link {
 
 impl Link {
     pub(crate) fn new(destination: &Url) -> Self {
+        let id = Uuid::new_v4();
+        let mut hash = base_x::encode(
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+            &id.as_bytes()[..],
+        );
+        let _remainder = hash.split_off(5);
+
         Self {
-            id: Uuid::new_v4(),
+            id,
+            hash,
             destination: destination.to_string(),
         }
     }
@@ -44,22 +53,36 @@ impl Link {
     pub(crate) async fn insert(conn: &mut PgConnection, link: Link) -> Result<Self, NewLinkError> {
         sqlx::query_as!(
             Self,
-            r#"INSERT INTO links (id, destination)
-            VALUES ($1, $2)
-            RETURNING id, destination
+            r#"INSERT INTO links (id, destination, hash)
+            VALUES ($1, $2, $3)
+            RETURNING id, destination, hash
             "#,
             link.id,
-            link.destination
+            link.destination,
+            link.hash
         )
         .fetch_one(conn)
         .await
         .map_err(|_| NewLinkError::DatabaseError)
     }
 
+    pub(crate) async fn get_by_hash(
+        conn: &mut PgConnection,
+        hash: &str,
+    ) -> sqlx::Result<Option<Self>> {
+        sqlx::query_as!(
+            Self,
+            "SELECT id, destination, hash FROM links WHERE hash = $1",
+            hash
+        )
+        .fetch_optional(conn)
+        .await
+    }
+
     pub(crate) async fn list(conn: &mut PgConnection) -> sqlx::Result<Vec<Self>> {
         sqlx::query_as!(
             Self,
-            "SELECT id, destination FROM links ORDER BY destination"
+            "SELECT id, destination, hash FROM links ORDER BY destination"
         )
         .fetch_all(conn)
         .await

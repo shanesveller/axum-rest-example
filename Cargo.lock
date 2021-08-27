@@ -124,6 +124,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "base-x",
  "chrono",
  "config",
  "hyper",
@@ -131,6 +132,7 @@ dependencies = [
  "opentelemetry-otlp",
  "secrecy",
  "serde",
+ "serde_json",
  "sqlx",
  "thiserror",
  "tokio",
@@ -142,6 +144,12 @@ dependencies = [
  "url",
  "uuid",
 ]
+
+[[package]]
+name = "base-x"
+version = "0.2.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a4521f3e3d031370679b3b140beb36dfe4801b09ac77e30c61941f97df3ef28b"
 
 [[package]]
 name = "base64"

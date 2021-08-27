@@ -6,7 +6,7 @@ use crate::{
 use anyhow::Result;
 use axum::{
     body::{Bytes, Full},
-    extract::{Extension, Json},
+    extract::{self, Extension, Json},
     handler::{get, post},
     http::StatusCode,
     response::{IntoResponse, Redirect},
@@ -76,12 +76,17 @@ async fn list_links(db: Extension<PgPool>) -> Result<Json<Vec<Link>>, AppError> 
     }
 }
 
-#[cfg_attr(debug_assertions, allow(clippy::unused_async))]
-#[instrument(skip(_db))]
-async fn visit_link(_db: Extension<PgPool>) -> Result<Redirect, AppError> {
-    Ok(Redirect::temporary(
-        "https://www.google.com/".parse().unwrap(),
-    ))
+#[instrument(skip(db))]
+async fn visit_link(
+    db: Extension<PgPool>,
+    extract::Path(hash): extract::Path<String>,
+) -> Result<Redirect, AppError> {
+    let mut conn = db.acquire().await?;
+
+    Link::get_by_hash(&mut conn, &hash).await?.map_or_else(
+        || Ok(Redirect::temporary("/".parse().unwrap())),
+        |link| Ok(Redirect::temporary(link.destination.parse().unwrap())),
+    )
 }
 
 pub async fn launch(config: &AppConfig) -> Result<()> {
