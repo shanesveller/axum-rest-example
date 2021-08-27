@@ -21,6 +21,7 @@ tower-http = { version = "^0.1.1", features = ["full"] }
 tracing = "^0.1.26"
 tracing-opentelemetry = "^0.15.0"
 tracing-subscriber = "^0.2.20"
+url = { version = "^2.2.2", features = ["serde"] }
 uuid = { version = "^0.8.2", features = ["serde", "v4"] }
 
 [dependencies.sqlx]
