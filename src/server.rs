@@ -1,53 +1,87 @@
 use crate::{
     config::AppConfig,
     db,
-    links::{Link, NewLink},
+    links::{Link, NewLink, NewLinkError},
 };
 use anyhow::Result;
 use axum::{
+    body::{Bytes, Full},
     extract::{Extension, Json},
     handler::{get, post},
-    response::Redirect,
+    http::StatusCode,
+    response::{IntoResponse, Redirect},
     AddExtensionLayer, Router, Server,
 };
+use serde_json::json;
 use sqlx::PgPool;
 use std::{
-    convert::TryInto,
+    convert::{Infallible, TryInto},
     net::{IpAddr, SocketAddr},
 };
 use tower_http::trace::TraceLayer;
-use tracing::{info, span};
+use tracing::{info, instrument, span};
+
+#[derive(Debug, thiserror::Error)]
+enum AppError {
+    #[error("error creating link")]
+    NewLinkError(#[from] NewLinkError),
+    #[error("database error")]
+    SqlError(#[from] sqlx::Error),
+}
+
+impl IntoResponse for AppError {
+    type Body = Full<Bytes>;
+
+    type BodyError = Infallible;
+
+    fn into_response(self) -> hyper::Response<Self::Body> {
+        let (status, message) = match self {
+            AppError::NewLinkError(_) => {
+                (StatusCode::UNPROCESSABLE_ENTITY, "could not create link")
+            }
+            AppError::SqlError(_) => (StatusCode::INTERNAL_SERVER_ERROR, "database error"),
+        };
+
+        let body = Json(json!({ "error": message }));
+
+        (status, body).into_response()
+    }
+}
 
 #[allow(clippy::unused_async)]
 async fn health_endpoint() -> &'static str {
     "OK"
 }
 
-async fn create_link(db: Extension<PgPool>, Json(payload): Json<NewLink>) -> Json<Link> {
-    let link = payload
-        .try_into()
-        .expect("could not parse link payload as valid URL");
+#[instrument(skip(db))]
+async fn create_link(
+    db: Extension<PgPool>,
+    Json(payload): Json<NewLink>,
+) -> Result<(StatusCode, Json<Link>), AppError> {
+    let link = payload.try_into()?;
 
-    let mut conn = db.acquire().await.expect("could not acquire DB conn");
-    let inserted = Link::insert(&mut conn, link)
-        .await
-        .expect("could not insert link");
+    let mut conn = db.acquire().await?;
+    let inserted = Link::insert(&mut conn, link).await?;
 
-    Json(inserted)
+    Ok((StatusCode::CREATED, inserted.into()))
 }
 
-async fn list_links(db: Extension<PgPool>) -> Json<Vec<Link>> {
-    let mut conn = db.acquire().await.expect("could not acquire DB conn");
+#[instrument(skip(db))]
+async fn list_links(db: Extension<PgPool>) -> Result<Json<Vec<Link>>, AppError> {
+    let mut conn = db.acquire().await?;
     if let Ok(links) = Link::list(&mut conn).await {
-        Json(links)
+        Ok(links.into())
     } else {
-        Json(vec![])
+        Ok(Json(vec![]))
     }
 }
 
 #[cfg_attr(debug_assertions, allow(clippy::unused_async))]
-async fn visit_link(_db: Extension<PgPool>) -> Redirect {
-    Redirect::temporary("https://www.google.com/".parse().unwrap())
+#[instrument(skip(_db))]
+async fn visit_link(_db: Extension<PgPool>) -> Result<Redirect, AppError> {
+    Ok(Redirect::temporary(
+        "https://www.google.com/".parse().unwrap(),
+    ))
 }
 
 pub async fn launch(config: &AppConfig) -> Result<()> {
