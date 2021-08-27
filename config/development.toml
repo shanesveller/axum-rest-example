@@ -1,0 +1,4 @@
+[database]
+connect_timeout_seconds = 15
+idle_timeout_seconds = 15
+max_lifetime_seconds = 300

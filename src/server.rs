@@ -1,4 +1,4 @@
-use crate::config::AppConfig;
+use crate::{config::AppConfig, db};
 use anyhow::Result;
 use axum::{handler::get, AddExtensionLayer, Router, Server};
 use std::net::{IpAddr, SocketAddr};
@@ -13,8 +13,11 @@ pub async fn launch(config: &AppConfig) -> Result<()> {
     let root_span = span!(tracing::Level::TRACE, "app_start");
     let _enter = root_span.enter();
 
+    let pool = db::new_pool(&config).await?;
+
     let app = Router::new()
         .route("/health", get(health_endpoint))
+        .layer(AddExtensionLayer::new(pool))
         .layer(TraceLayer::new_for_http());
 
     let addr = SocketAddr::new(

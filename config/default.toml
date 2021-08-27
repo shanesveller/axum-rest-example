@@ -1,5 +1,10 @@
 [database]
 database_url = "postgresql://postgres:postgres@localhost/axum_rest_example_dev"
+min_connections = 8
+max_connections = 128
+connect_timeout_seconds = 30
+idle_timeout_seconds = 900
+max_lifetime_seconds = 3600
 
 [http]
 listen_address = "0.0.0.0"

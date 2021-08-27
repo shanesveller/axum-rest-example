@@ -37,6 +37,11 @@ impl AppConfig {
 
 #[derive(Debug, Deserialize)]
 pub struct DatabaseConfig {
+    pub max_connections: u32,
+    pub min_connections: u32,
+    pub connect_timeout_seconds: u64,
+    pub idle_timeout_seconds: u64,
+    pub max_lifetime_seconds: u64,
     #[serde(default = "default_database_url")]
     pub url: Secret<String>,
 }
@@ -48,6 +53,12 @@ fn default_database_url() -> Secret<String> {
 impl Default for DatabaseConfig {
     fn default() -> Self {
         Self {
+            max_connections: 128,
+            // TODO: number of CPU cores/worker threads
+            min_connections: 8,
+            connect_timeout_seconds: 30,
+            idle_timeout_seconds: 900,
+            max_lifetime_seconds: 3600,
             url: default_database_url(),
         }
     }
