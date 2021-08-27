@@ -1,0 +1,5 @@
+edition = "2018"
+
+merge_derives = true
+# Unavailable in stable Rust
+# merge_imports = true
