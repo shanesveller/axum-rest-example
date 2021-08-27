@@ -39,5 +39,5 @@ features = [
 ]
 
 [features]
-default = []
+default = ["tracing/release_max_level_debug"]
 otel = ["opentelemetry", "opentelemetry-otlp", "opentelemetry-otlp/tonic"]
