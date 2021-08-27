@@ -1,24 +1,47 @@
+use std::convert::TryFrom;
+
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgConnection};
 use url::Url;
 use uuid::Uuid;
 
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub(crate) struct NewLink {
+    destination: String,
+}
+
 #[derive(Clone, Debug, PartialEq, Deserialize, FromRow, Serialize)]
-struct Link {
+pub(crate) struct Link {
     id: Uuid,
     destination: String,
 }
 
-#[cfg_attr(debug_assertions, allow(dead_code))]
+#[derive(Debug, thiserror::Error, Serialize)]
+pub(crate) enum NewLinkError {
+    #[error("malformed url")]
+    InvalidUrl,
+    #[error("could not insert into database")]
+    DatabaseError,
+}
+
+impl TryFrom<NewLink> for Link {
+    type Error = NewLinkError;
+
+    fn try_from(link: NewLink) -> Result<Self, Self::Error> {
+        let dest = Url::parse(&link.destination).map_err(|_| NewLinkError::InvalidUrl)?;
+        Ok(Self::new(&dest))
+    }
+}
+
 impl Link {
-    fn new(destination: &Url) -> Self {
+    pub(crate) fn new(destination: &Url) -> Self {
         Self {
             id: Uuid::new_v4(),
             destination: destination.to_string(),
         }
     }
 
-    async fn insert(conn: &mut PgConnection, link: Link) -> sqlx::Result<Self> {
+    pub(crate) async fn insert(conn: &mut PgConnection, link: Link) -> Result<Self, NewLinkError> {
         sqlx::query_as!(
             Self,
             r#"INSERT INTO links (id, destination)
@@ -30,9 +53,10 @@ impl Link {
         )
         .fetch_one(conn)
         .await
+        .map_err(|_| NewLinkError::DatabaseError)
     }
 
-    async fn list(conn: &mut PgConnection) -> sqlx::Result<Vec<Self>> {
+    pub(crate) async fn list(conn: &mut PgConnection) -> sqlx::Result<Vec<Self>> {
         sqlx::query_as!(
             Self,
             "SELECT id, destination FROM links ORDER BY destination"

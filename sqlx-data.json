@@ -1,0 +1,54 @@
+{
+  "db": "PostgreSQL",
+  "105b4185d52a857ea6d42d74d326754e5a514b373facb97f09cb65d6c17a90fe": {
+    "query": "INSERT INTO links (id, destination)\n            VALUES ($1, $2)\n            RETURNING id, destination\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Uuid"
+        },
+        {
+          "ordinal": 1,
+          "name": "destination",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Text"
+        ]
+      },
+      "nullable": [
+        false,
+        false
+      ]
+    }
+  },
+  "50b137c0102087855f2a810d3853a9ea9bc92f53983991b07226c9a8343f595b": {
+    "query": "SELECT id, destination FROM links ORDER BY destination",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Uuid"
+        },
+        {
+          "ordinal": 1,
+          "name": "destination",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": []
+      },
+      "nullable": [
+        false,
+        false
+      ]
+    }
+  }
+}
