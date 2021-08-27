@@ -26,5 +26,8 @@ A full-featured example REST service using [`axum`], [`sqlx`], [`tokio`], and
 
 pub mod config;
 pub mod db;
+mod links;
 pub mod server;
 pub mod telemetry;
+#[cfg(test)]
+mod test_helpers;
