@@ -23,3 +23,5 @@ A full-featured example REST service using [`axum`], [`sqlx`], [`tokio`], and
     unused_import_braces,
     unused_qualifications
 )]
+
+pub mod config;
