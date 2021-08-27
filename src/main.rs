@@ -1,10 +1,12 @@
 use anyhow::Result;
-use axum_rest_example::{config::AppConfig, telemetry};
-use tracing::info;
+use axum_rest_example::{config::AppConfig, server, telemetry};
+use tracing::debug;
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     let config = AppConfig::new()?;
     telemetry::init(&config)?;
-    info!("Hello, world!");
+    debug!(?config);
+    server::launch(&config).await?;
     Ok(())
 }
