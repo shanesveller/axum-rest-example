@@ -2,7 +2,32 @@
 name = "axum-rest-example"
 version = "0.1.0"
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+publish = false
 
 [dependencies]
+anyhow = "^1.0.43"
+axum = { version = "^0.2.3", features = ["headers"] }
+chrono = { version = "^0.4.19", features = ["serde"] }
+config = { version = "^0.11.0", features = ["toml"], default-features = false }
+hyper = { version = "^0.14.12", features = ["full"] }
+secrecy = { version = "^0.8.0", features = ["serde"] }
+serde = { version = "^1.0.129", features = ["derive"] }
+thiserror = "^1.0.26"
+tokio = { version = "^1.10.0", features = ["full"] }
+tower = { version = "^0.4.8", features = ["full"] }
+tower-http = { version = "^0.1.1", features = ["full"] }
+tracing = "^0.1.26"
+tracing-subscriber = "^0.2.20"
+uuid = { version = "^0.8.2", features = ["serde", "v4"] }
+
+[dependencies.sqlx]
+version = "^0.5.7"
+features = [
+    "chrono",
+    "migrate",
+    "offline",
+    "postgres",
+    "runtime-tokio-rustls",
+    "tls",
+    "uuid",
+]
