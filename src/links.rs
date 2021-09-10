@@ -2,6 +2,7 @@ use std::convert::TryFrom;
 
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgConnection};
+use tracing::instrument;
 use url::Url;
 use uuid::Uuid;
 
@@ -50,6 +51,7 @@ impl Link {
         }
     }
 
+    #[instrument(skip(conn))]
     pub(crate) async fn insert(conn: &mut PgConnection, link: Link) -> Result<Self, NewLinkError> {
         sqlx::query_as!(
             Self,
@@ -66,6 +68,7 @@ impl Link {
         .map_err(|_| NewLinkError::DatabaseError)
     }
 
+    #[instrument(skip(conn))]
     pub(crate) async fn get_by_hash(
         conn: &mut PgConnection,
         hash: &str,
@@ -79,6 +82,7 @@ impl Link {
         .await
     }
 
+    #[instrument(skip(conn))]
     pub(crate) async fn list(conn: &mut PgConnection) -> sqlx::Result<Vec<Self>> {
         sqlx::query_as!(
             Self,
