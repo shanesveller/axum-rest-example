@@ -1,5 +1,12 @@
+export DOCKERBUILD_KIT := "1"
+export DOCKER_DATABASE_URL := "postgresql://postgres:postgres@localhost:15432/axum_rest_example"
+
 build:
   cargo build
+docker-migrate:
+  docker-compose up -d db
+  sqlx -D $DOCKER_DATABASE_URL database create
+  sqlx -D $DOCKER_DATABASE_URL migrate run
 lint:
   cargo clippy --lib
 migrate:
@@ -7,15 +14,16 @@ migrate:
   sqlx migrate run
 release: migrate
   cargo sqlx prepare -- --lib
-  git rm -f Cargo.nix
-  nix run .#cargo2nix -- -f
-  git add Cargo.nix
-  nix -vL build .#docker --no-link
-  ./result | docker load
+  docker build -t axum-rest-example:latest .
 reset:
   sqlx database reset -y
 run:
   cargo run
+run-docker-all: release docker-migrate
+  docker-compose up -d
+run-docker: release docker-migrate
+  docker-compose up -d app
+  docker-compose logs -f
 test: test-migrate
   cargo test
 test-migrate:
