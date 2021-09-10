@@ -1,0 +1,169 @@
+#+TITLE: Axum Rest Example
+#+AUTHOR: Shane Sveller <shane@sveller.dev>
+
+* Table of Contents :TOC_2:
+- [[#purpose][Purpose]]
+- [[#quickstart][Quickstart]]
+  - [[#development][Development]]
+  - [[#usage][Usage]]
+  - [[#client-examples][Client Examples]]
+- [[#goals][Goals]]
+- [[#features][Features]]
+- [[#included-components][Included Components]]
+  - [[#rust][Rust]]
+  - [[#non-rust][Non-Rust]]
+  - [[#documentation][Documentation]]
+- [[#not-included][Not Included]]
+- [[#decisions][Decisions]]
+  - [[#tokio-over-async-std][Tokio over async-std]]
+  - [[#tracing-over-logenv_logger][Tracing over log/env_logger]]
+  - [[#axum-over-warp][Axum over Warp]]
+  - [[#axum-over-actix-web][Axum over Actix-Web]]
+  - [[#axum-over-rocket][Axum over Rocket]]
+  - [[#sqlx-over-diesel][Sqlx over Diesel]]
+
+* Purpose
+Educational resource for coworkers looking to explore REST development with
+Rust. Quite opinionated.
+
+The project itself provides an extremely simplified, API-only URL shortener with
+various sub-optimal choices and in no way represents a production-ready way to
+build such a service. It's basically just enough to show how to wire up a
+database query to satisfy a request.
+
+*This document will generally not go into much project-agnostic detail about Rust
+practices and conventions*.
+* Quickstart
+** Development
+Non-Nix:
+#+begin_src shell
+rustup toolchain install stable
+cargo install --locked sqlx-cli
+# i.e. postgresql://$USER:postgres@localhost/axum_rest_example_dev
+export DATABASE_URL=...
+sqlx -d $DATABASE_URL database create
+sqlx -d $DATABASE_URL migrate run
+cargo clippy --lib
+cargo build
+cargo test
+#+end_src
+
+Hot iteration loop using cargo-watch
+#+begin_src shell
+cargo watch -x 'clippy --lib' -x 'test --lib' -x run
+#+end_src
+*** Nix with Direnv
+Requires a recent Nix (2.4pre...) with Flakes support, plus nix-direnv.
+#+begin_src shell
+direnv allow .
+#+end_src
+*** Nix without Direnv
+Requires a recent Nix (2.4pre...) with Flakes support.
+#+begin_src shell
+nix develop
+export DATABASE_URL=...
+#+end_src
+*** MacOS, Non-Nix
+Install [[https://rustup.rs/][Rustup]], then:
+#+begin_src shell
+cargo install --locked cargo-watch just sqlx-cli
+export DATABASE_URL=...
+#+end_src
+*** Linux, Non-Nix
+You'll also need to install ~clang~ and ~lld~ for the faster linking experience.
+** Usage
+Native, with ~just~
+#+begin_src shell
+# i.e. postgresql://$USER:postgres@localhost/axum_rest_example_dev
+export DATABASE_URL=...
+just migrate run
+#+end_src
+Native, no ~just~
+#+begin_src shell
+# i.e. postgresql://$USER:postgres@localhost/axum_rest_example_dev
+export DATABASE_URL=...
+sqlx -d $DATABASE_URL database create
+sqlx -d $DATABASE_URL migrate run
+cargo run
+#+end_src
+** Client Examples
+Using [[https://httpie.io/][httpie]]:
+#+begin_src shell
+http post :8080/v1/link destination=https://www.google.com/
+HTTP/1.1 201 Created
+content-length: 104
+content-type: application/json
+date: Fri, 10 Sep 2021 15:38:53 GMT
+
+{
+    "destination": "https://www.google.com/",
+    "hash": "ghMW5",
+    "id": "c92ead3b-f319-44e5-9764-6b12dffb5a46"
+}
+#+end_src
+#+begin_src shell
+http get :8080/ghMW5
+HTTP/1.1 307 Temporary Redirect
+content-length: 0
+date: Fri, 10 Sep 2021 15:39:18 GMT
+location: https://www.google.com/
+#+end_src
+* Goals
+- [ ] Demonstrate expressivity of Rust's stdlib patterns such as Result/Option/enums/pattern-matching
+- [ ] Demonstrate utility of ~thiserror~ / ~anyhow~ for domain errors
+- [ ] Demonstrate utility of ~serde~ for handling structural issues with
+  incoming payloads
+- [ ] Demonstrate viability of Rust for backend service development
+- [X] Don't depend on beta releases of libraries to be able to compile with the
+  latest Tokio
+- [X] Comprehensive use of async
+- [ ] Framework-level conventions and configurability
+- [ ] High-quality observability
+- [X] Don't shy away from intermediate or advanced Rust if it's needed
+- [X] Don't shy away from community tooling that would be commonly used by an
+  experienced practitioner
+* Features
+- Read/write unauthenticated API endpoint
+- Task automation with Just
+- Database migrations via sqlx
+* Included Components
+** Rust
+*** Tokio
+*** Axum
+*** Tracing
+**** Opentelemetry
+*** Sqlx
+*** Serde
+*** Config
+*** thiserror/anyhow
+** Non-Rust
+*** Nix [[https://nixos.wiki/wiki/Flakes][Flake]]
+*** [[https://direnv.net/][Direnv]] config with Nix Flake support
+*** Dockerfile
+- Uses [[https://github.com/LukeMathWalker/cargo-chef/][cargo-chef]] to produce cache-friendly layers containing just your dependencies
+*** Docker-Compose environment
+**** App
+**** PostgreSQL
+**** Grafana
+**** Prometheus
+**** Loki
+***** Loki log driver config
+**** Tempo
+*** [[https://github.com/casey/just][Just]]
+** Documentation
+- [ ] This README
+- [ ] Rustdoc
+* Not Included
+- Non-trivial authentication
+- Any kind of ORM or database abstraction beyond ~sqlx~
+* Decisions
+** Tokio over async-std
+** Tracing over log/env_logger
+** Axum over Warp
+** Axum over Actix-Web
+** Axum over Rocket
+** Sqlx over Diesel
+- emphatically not an ORM, you write raw SQL with occasional SQL-compatible
+  annotations for type hinting
+- compile-time checking of query semantics
+- SQL-syntax migrations
