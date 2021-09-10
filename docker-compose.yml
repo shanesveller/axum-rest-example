@@ -28,7 +28,7 @@ services:
     init: true
     environment:
       APP_DATABASE__URL: "postgres://postgres:postgres@db/axum_rest_example"
-      APP_TELEMETRY__LOG_FORMAT: json
+      APP_ENV: production
       RUST_LOG: axum_rest_example=debug,tower_http=debug,info
     ports:
       - "8080:8080"
@@ -36,6 +36,8 @@ services:
       driver: loki
       options:
         loki-url: 'http://localhost:3100/api/prom/push'
+    volumes:
+      - ./shared/production.toml:/app/config/production.toml:ro
 
   grafana:
     # https://hub.docker.com/r/grafana/grafana/tags?page=1&ordering=last_updated
