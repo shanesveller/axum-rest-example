@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "cargo2nix": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1627047284,
-        "narHash": "sha256-2NI+P5FI00AIG/d2TUlRNgfdjkzhxUEEBy67qb0PAa8=",
-        "owner": "cargo2nix",
-        "repo": "cargo2nix",
-        "rev": "92103dc68ecf4f386c818321e19ae964c20b88d7",
-        "type": "github"
-      },
-      "original": {
-        "owner": "cargo2nix",
-        "repo": "cargo2nix",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -79,7 +63,6 @@
     },
     "root": {
       "inputs": {
-        "cargo2nix": "cargo2nix",
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
         "master": "master",
