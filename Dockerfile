@@ -13,11 +13,13 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
 COPY --from=planner /app/recipe.json recipe.json
-RUN cargo chef cook --release --recipe-path recipe.json
+RUN cargo chef cook --recipe-path recipe.json \
+    --features otel \
+    --release
 COPY . .
 RUN rm -rf .cargo && \
     SQLX_OFFLINE=true \
-    cargo build --release
+    cargo build --features otel --release
 
 FROM debian:buster-slim AS runtime
 WORKDIR /app
