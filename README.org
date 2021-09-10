@@ -175,12 +175,48 @@ cargo doc --features otel --document-private-items --open
 - Any kind of ORM or database abstraction beyond ~sqlx~
 * Decisions
 ** Tokio over async-std
+I find Tokio a technically more compelling suite of libraries, as well as
+finding its community extremely welcoming, curious, and active. ~async-std~
+simply doesn't seem to have the community or velocity I'm looking for, and I
+find a bifurcation of the Rust community along tribal lines to be extremely
+frustrating as a developer. You can't use libraries written for one runtime in a
+project that uses another without wastefully running threads for both and
+needing translation layers anywhere they might need to directly interact. I've
+never once found an ~async-std~ -derived project compelling enough to look past
+the division it creates. I'm very confident that by comparison, fewer projects
+built with Tokio will have reason to regret their choice in 2-5 years.
 ** Tracing over log/env_logger
+I've found that many many projects and examples default to ~env_logger~ as an
+easy logging solution, but ~tracing~ is incredibly robust when you outgrow those
+features, and has been adopted by core community crates as well as part of the
+Rust toolchain itself.
 ** Axum over Warp
+Despite my background with Ruby's Rack and Elixir's Plug, I personally find
+Warp's compiler messages to be quite opaque and struggled to be successful with
+it. Until ~axum~ became available, this was still the best choice to be on a
+relatively pure Tokio + Hyper stack.
 ** Axum over Actix-Web
+In order to build with a modern stable release of Tokio, you need to run beta
+versions of Actix-Web 4.0.x, and this has been the case for essentially all
+of 2021. They're possibly getting close, but I more or less have stopped caring.
+Has pretty good docs and features, but also has a huge dependency footprint too.
+Finally, I'm not able to totally put all of the controversy around gaming the
+TechEmpower benchmarks behind me, which left a very bad taste in my mouth even
+as a bystander.
 ** Axum over Rocket
+Until very recently you flat out couldn't use Rocket without nightly Rust, and
+if you stick to stable versions from Crates.io this continues to be the case.
+Also irregularly gives surprisingly poor results in comparative benchmarks,
+which I'm not willing to trade for decent ergonomics.
 ** Sqlx over Diesel
-- emphatically not an ORM, you write raw SQL with occasional SQL-compatible
-  annotations for type hinting
-- compile-time checking of query semantics
-- SQL-syntax migrations
+~sqlx~ is emphatically not an ORM, so you write raw SQL with occasional
+SQL-compatible annotations for type hinting at the boundary between Rust and
+SQL. Using its `query!` and `query_as!` family of macros, it allows compile-time
+checking of query semantics, i.e. have you written something that PostgreSQL
+understands to be a viable query given your current database schema? Uses pure
+SQL for DDL migrations.
+
+Diesel appears to have a lot going for it ergnomically, but it is both not async
+and somewhere between [[https://github.com/diesel-rs/diesel/issues/399][apathetic and actively disinterested in being converted to
+async]]. That's a total non-starter for me given that I am able to avoid such
+compromises anywhere else in the web development stack used for this project.
