@@ -75,13 +75,6 @@ services:
       options:
         loki-url: 'http://localhost:3100/api/prom/push'
 
-  otlp:
-    # https://hub.docker.com/r/otel/opentelemetry-collector/tags?page=1&ordering=last_updated
-    image: otel/opentelemetry-collector:0.33.0
-    command: "--config /etc/otlp.yaml"
-    volumes:
-      - ./shared/otlp.yaml:/etc/otlp.yaml:ro
-
   prometheus:
     # https://hub.docker.com/r/prom/prometheus/tags?page=1&ordering=last_updated
     # https://github.com/prometheus/prometheus/releases/latest
