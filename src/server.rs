@@ -18,6 +18,7 @@ use std::{
     convert::{Infallible, TryInto},
     net::{IpAddr, SocketAddr},
 };
+use tokio::signal::unix::{signal, SignalKind};
 use tower_http::trace::TraceLayer;
 use tracing::{info, instrument, span};
 
@@ -109,12 +110,51 @@ pub async fn launch(config: &AppConfig) -> Result<()> {
         config.http.listen_port,
     );
 
+    let (shutdown_tx, shutdown_rx) = tokio::sync::oneshot::channel::<()>();
+
+    let signal_handler = tokio::spawn(async {
+        tokio::pin! {
+          let interrupt = signal(SignalKind::interrupt()).expect("could not open SIGINT channel");
+          let quit = signal(SignalKind::quit()).expect("could not open SIGQUIT channel");
+          let term = signal(SignalKind::terminate()).expect("could not open SIGTERM channel");
+        };
+
+        loop {
+            tokio::select! {
+              _ = (&mut interrupt).recv() => {
+                  info!("SIGINT received");
+                  break;
+              }
+              _ = (&mut quit).recv() => {
+                  info!("SIGQUIT received");
+                  break;
+              }
+              _ = (&mut term).recv() => {
+                  info!("SIGTERM received");
+                  break;
+              }
+            }
+        }
+
+        shutdown_tx
+            .send(())
+            .expect("could not send shutdown signal");
+    });
+
     info!(port = ?addr.port(), address = ?addr.ip(), "Listening on http://{}/", addr);
+    info!("Waiting for SIGTERM/SIGQUIT for graceful shutdown");
 
     Server::bind(&addr)
         .serve(app.into_make_service())
+        .with_graceful_shutdown(async {
+            shutdown_rx.await.ok();
+        })
         .await
         .expect("could not launch HTTP server on port 8080");
+
+    signal_handler
+        .await
+        .expect("error with shutdown handler task");
 
     Ok(())
 }
