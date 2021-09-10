@@ -2,17 +2,21 @@ receivers:
   jaeger:
     protocols:
       thrift_compact:
+  otlp:
+    protocols:
+      grpc:
 
 processors:
   batch:
 
 exporters:
   otlp:
-    endpoint: tempo:14268
+    endpoint: tempo:4317
+    insecure: true
 
 service:
   pipelines:
     traces:
-      receivers: [jaeger]
+      receivers: [otlp]
       processors: [batch]
       exporters: [otlp]
