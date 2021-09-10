@@ -5,22 +5,24 @@ use crate::{
 };
 use anyhow::Result;
 use axum::{
-    body::{Bytes, Full},
+    body::{BoxBody, Bytes, Full},
     extract::{self, Extension, Json},
     handler::{get, post},
-    http::StatusCode,
+    http::{Request, Response, StatusCode},
     response::{IntoResponse, Redirect},
     AddExtensionLayer, Router, Server,
 };
+use hyper::Body;
 use serde_json::json;
 use sqlx::PgPool;
 use std::{
     convert::{Infallible, TryInto},
     net::{IpAddr, SocketAddr},
+    time::Duration,
 };
 use tokio::signal::unix::{signal, SignalKind};
 use tower_http::trace::TraceLayer;
-use tracing::{info, instrument, span};
+use tracing::{debug_span, field, info, instrument, span, Span};
 
 #[derive(Debug, thiserror::Error)]
 enum AppError {
@@ -35,7 +37,7 @@ impl IntoResponse for AppError {
 
     type BodyError = Infallible;
 
-    fn into_response(self) -> hyper::Response<Self::Body> {
+    fn into_response(self) -> Response<Self::Body> {
         let (status, message) = match self {
             AppError::NewLinkError(_) => {
                 (StatusCode::UNPROCESSABLE_ENTITY, "could not create link")
@@ -90,6 +92,42 @@ async fn visit_link(
     )
 }
 
+fn make_span(_request: &Request<Body>) -> Span {
+    #[cfg(feature = "otel")]
+    {
+        debug_span!(
+            "http-request",
+            request_duration = tracing::field::Empty,
+            status_code = tracing::field::Empty,
+            traceID = tracing::field::Empty,
+        )
+    }
+    #[cfg(not(feature = "otel"))]
+    {
+        debug_span!(
+            "http-request",
+            request_duration = tracing::field::Empty,
+            status_code = tracing::field::Empty,
+        )
+    }
+}
+
+fn emit_response_trace_with_id(response: &Response<BoxBody>, latency: Duration, span: &Span) {
+    #[cfg(feature = "otel")]
+    {
+        // https://github.com/kube-rs/controller-rs/blob/b99ad0bfbf4ae75f03323bff2796572d4257bd96/src/telemetry.rs#L4-L8
+        use opentelemetry::trace::TraceContextExt;
+        use tracing_opentelemetry::OpenTelemetrySpanExt;
+        let trace_id = span.context().span().span_context().trace_id().to_hex();
+        span.record("traceID", &field::display(&trace_id));
+    }
+
+    span.record("request_duration", &field::display(latency.as_micros()));
+    span.record("status_code", &field::display(response.status().as_u16()));
+
+    tracing::debug!("response generated");
+}
+
 pub async fn launch(config: &AppConfig) -> Result<()> {
     let root_span = span!(tracing::Level::TRACE, "app_start");
     let _enter = root_span.enter();
@@ -101,9 +139,12 @@ pub async fn launch(config: &AppConfig) -> Result<()> {
         .route("/health", get(health_endpoint))
         .route("/v1/link", post(create_link))
         .route("/v1/links", get(list_links))
-        // TODO: Omit health check from request logging
         .layer(AddExtensionLayer::new(pool))
-        .layer(TraceLayer::new_for_http());
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(make_span)
+                .on_response(emit_response_trace_with_id),
+        );
 
     let addr = SocketAddr::new(
         IpAddr::V4(config.http.listen_address),
