@@ -1,3 +1,5 @@
+//! [`axum`]-specific logic for offering a REST API
+
 use crate::{
     config::AppConfig,
     db,
@@ -24,6 +26,8 @@ use tokio::signal::unix::{signal, SignalKind};
 use tower_http::trace::TraceLayer;
 use tracing::{debug_span, field, info, instrument, span, Span};
 
+/// Wrapper Error enum used to provide a consistent [`IntoResponse`] target for
+/// request handlers that return inner domain Error types.
 #[derive(Debug, thiserror::Error)]
 enum AppError {
     #[error("error creating link")]
@@ -51,11 +55,21 @@ impl IntoResponse for AppError {
     }
 }
 
+/// GET handler for health requests by an application platform
+///
+/// Intended for use in environments such as Amazon ECS or Kubernetes which want
+/// to validate that the HTTP service is available for traffic, by returning a
+/// 200 OK response with any content.
 #[allow(clippy::unused_async)]
 async fn health_endpoint() -> &'static str {
     "OK"
 }
 
+/// POST handler for creating new [`Link`]s
+///
+/// Extracts a [`NewLink`] from the request body as a JSON payload, and if
+/// valid, generates and inserts a [`Link`] into the database. Returns the
+/// inserted `Link` as the response body.
 #[instrument(skip(db))]
 async fn create_link(
     db: Extension<PgPool>,
@@ -69,6 +83,9 @@ async fn create_link(
     Ok((StatusCode::CREATED, inserted.into()))
 }
 
+/// GET handler which lists all previously recorded [`Link`]s without any limits
+///
+/// Returns a static ordering as determined by [`Link::list`].
 #[instrument(skip(db))]
 async fn list_links(db: Extension<PgPool>) -> Result<Json<Vec<Link>>, AppError> {
     let mut conn = db.acquire().await?;
@@ -79,6 +96,9 @@ async fn list_links(db: Extension<PgPool>) -> Result<Json<Vec<Link>>, AppError> 
     }
 }
 
+/// GET handler which fetches a [`Link`] and redirects to its `destination` URL
+///
+/// Redirects to own `/` if no matching `hash` is found.
 #[instrument(skip(db))]
 async fn visit_link(
     db: Extension<PgPool>,
@@ -92,6 +112,8 @@ async fn visit_link(
     )
 }
 
+/// Internal helper for [`tower_http::trace::TraceLayer`] to create
+/// [`tracing::Span`]s around a request.
 fn make_span(_request: &Request<Body>) -> Span {
     #[cfg(feature = "otel")]
     {
@@ -112,6 +134,9 @@ fn make_span(_request: &Request<Body>) -> Span {
     }
 }
 
+/// Internal helper for [`tower_http::trace::TraceLayer`] to emit a structured [`tracing::Span`] with specific recorded fields.
+///
+/// Uses a `Loki`-friendly traceID that can correlate to `Tempo` distributed traces.
 fn emit_response_trace_with_id(response: &Response<BoxBody>, latency: Duration, span: &Span) {
     #[cfg(feature = "otel")]
     {
@@ -128,6 +153,13 @@ fn emit_response_trace_with_id(response: &Response<BoxBody>, latency: Duration, 
     tracing::debug!("response generated");
 }
 
+/// Opens an HTTP server on the indicated address and port from an [`AppConfig`].
+///
+/// Relies on [`axum::Server`] for the primary behavior. Also launches a
+/// [`tokio::signal`]-based task to listen for OS kill signals to allow
+/// in-flight requests to finish first, via
+/// [`axum::Server::with_graceful_shutdown`]. Currently also comprehensively
+/// defines all HTTP routes.
 pub async fn launch(config: &AppConfig) -> Result<()> {
     let root_span = span!(tracing::Level::TRACE, "app_start");
     let _enter = root_span.enter();

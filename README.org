@@ -153,6 +153,9 @@ location: https://www.google.com/
 ** Documentation
 - [ ] This README
 - [ ] Rustdoc
+  #+begin_src shell
+cargo doc --features otel --document-private-items
+  #+end_src
 * Not Included
 - Non-trivial authentication
 - Any kind of ORM or database abstraction beyond ~sqlx~

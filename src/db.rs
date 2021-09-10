@@ -1,10 +1,13 @@
+//! Table-agnostic database helpers around [`sqlx`]
 use std::time::Duration;
 
 use crate::config::AppConfig;
 use secrecy::ExposeSecret;
 use sqlx::{pool::PoolOptions, PgPool};
 
-pub async fn new_pool(config: &AppConfig) -> sqlx::Result<PgPool> {
+/// Helper for initializing a sqlx [`PgPool`] connection pool using a provided
+/// [`AppConfig`] to determine connection/authentication details
+pub(crate) async fn new_pool(config: &AppConfig) -> sqlx::Result<PgPool> {
     PoolOptions::new()
         .connect_timeout(Duration::from_secs(config.database.connect_timeout_seconds))
         .max_connections(config.database.max_connections)

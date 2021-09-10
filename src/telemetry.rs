@@ -1,3 +1,5 @@
+//! Observability features powered primarily by [`tracing`] and [`opentelemetry`]
+
 #[cfg(feature = "otel")]
 use std::time::Duration;
 
@@ -12,6 +14,14 @@ use tracing_subscriber::{fmt::format::FmtSpan, layer::SubscriberExt, EnvFilter, 
 
 use crate::config::{AppConfig, LogFormat};
 
+/// Initializes singleton-style logging and tracing features
+///
+/// When the `otel` Cargo feature is active, enabled an [`opentelemetry_otlp`]
+/// tracing pipeline for reporting distributed tracing data and spans to a
+/// remote endpoint.
+///
+/// Also responsible for local logging output via [`tracing`] and
+/// [`mod@tracing_subscriber::fmt`].
 pub fn init(config: &AppConfig) -> Result<()> {
     #[cfg(feature = "otel")]
     let tracer = opentelemetry_otlp::new_pipeline()

@@ -1,3 +1,5 @@
+//! Core database interactions around [`Link`]s
+
 use std::convert::TryFrom;
 
 use serde::{Deserialize, Serialize};
@@ -6,15 +8,20 @@ use tracing::instrument;
 use url::Url;
 use uuid::Uuid;
 
+/// An input-only type used to extract the mandatory fields for creating a new [`Link`]
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub(crate) struct NewLink {
+    /// fully resolved target URL to redirect to
     destination: String,
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize, FromRow, Serialize)]
+/// A shortened URL that redirects to a full URL
 pub(crate) struct Link {
     id: Uuid,
+    /// The short, opaque segment exposed as the path portion of URLs shortened by this app
     hash: String,
+    /// fully resolved target URL to redirect to, has been previously parsed as a [`Url`] prior to insertion
     pub(crate) destination: String,
 }
 
@@ -36,6 +43,7 @@ impl TryFrom<NewLink> for Link {
 }
 
 impl Link {
+    /// Build a new `Link` given just a `destination` URL
     pub(crate) fn new(destination: &Url) -> Self {
         let id = Uuid::new_v4();
         let mut hash = base_x::encode(
@@ -51,6 +59,7 @@ impl Link {
         }
     }
 
+    /// Inserts a well-formed `Link` into the database, returning a [`Result`] over the `Link` type
     #[instrument(skip(conn))]
     pub(crate) async fn insert(conn: &mut PgConnection, link: Link) -> Result<Self, NewLinkError> {
         sqlx::query_as!(
@@ -68,6 +77,9 @@ impl Link {
         .map_err(|_| NewLinkError::DatabaseError)
     }
 
+    /// Fetches a `Link` with a given `hash`, if one exists
+    ///
+    /// The most common way of retrieving `Link`s for this use-case.
     #[instrument(skip(conn))]
     pub(crate) async fn get_by_hash(
         conn: &mut PgConnection,
@@ -82,6 +94,7 @@ impl Link {
         .await
     }
 
+    /// Lists all previously recorded `Link`s without filtering, access control, or other qualification
     #[instrument(skip(conn))]
     pub(crate) async fn list(conn: &mut PgConnection) -> sqlx::Result<Vec<Self>> {
         sqlx::query_as!(
