@@ -13,3 +13,4 @@ listen_port = 8080
 [telemetry]
 log_format = "json"
 opentelemetry = true
+opentelemetry_endpoint = "http://otlp:4317"

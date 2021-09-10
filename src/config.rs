@@ -103,10 +103,12 @@ impl Default for LogFormat {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize)]
 pub struct TelemetryConfig {
     #[serde(default)]
     pub opentelemetry: bool,
+    #[serde(default)]
+    pub opentelemetry_endpoint: Option<String>,
     #[serde(default)]
     pub log_format: LogFormat,
 }
