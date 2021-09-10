@@ -3,16 +3,17 @@
 
 * Table of Contents :TOC_2:
 - [[#purpose][Purpose]]
+- [[#features][Features]]
 - [[#quickstart][Quickstart]]
   - [[#development][Development]]
   - [[#usage][Usage]]
   - [[#client-examples][Client Examples]]
 - [[#goals][Goals]]
-- [[#features][Features]]
 - [[#included-components][Included Components]]
   - [[#rust][Rust]]
   - [[#non-rust][Non-Rust]]
   - [[#documentation][Documentation]]
+- [[#incomplete-planned-features][Incomplete Planned Features]]
 - [[#not-included][Not Included]]
 - [[#decisions][Decisions]]
   - [[#tokio-over-async-std][Tokio over async-std]]
@@ -33,7 +34,18 @@ database query to satisfy a request.
 
 *This document will generally not go into much project-agnostic detail about Rust
 practices and conventions*.
+* Features
+- Read/write unauthenticated API endpoint to POST full URLs to and receive a
+  shortened `hash` back
+- Configurable via TOML and/or environment variables
+- Can be run in a container via Docker Compose, along with a suite of
+  observability tools around it
+- Task automation with Just
+- Database migrations via sqlx
 * Quickstart
+/This section still needs drastic improvement for audiences who are unfamiliar
+with any combination of Rust, Rustup, Nix, Cargo, etc./
+
 ** Development
 Non-Nix:
 #+begin_src shell
@@ -122,10 +134,6 @@ location: https://www.google.com/
 - [X] Don't shy away from intermediate or advanced Rust if it's needed
 - [X] Don't shy away from community tooling that would be commonly used by an
   experienced practitioner
-* Features
-- Read/write unauthenticated API endpoint
-- Task automation with Just
-- Database migrations via sqlx
 * Included Components
 ** Rust
 *** Tokio
@@ -151,11 +159,17 @@ location: https://www.google.com/
 **** Tempo
 *** [[https://github.com/casey/just][Just]]
 ** Documentation
-- [ ] This README
-- [ ] Rustdoc
+- This README
+- Rustdoc
+
+To view local code-specific documentation, you may use:
   #+begin_src shell
-cargo doc --features otel --document-private-items
+cargo doc --features otel --document-private-items --open
   #+end_src
+* Incomplete Planned Features
+- Prometheus-based technical and domain-specific metrics
+- Grafana dashboards and documentation
+- Documentation and automation improvements for guest contributors who are Nix-averse
 * Not Included
 - Non-trivial authentication
 - Any kind of ORM or database abstraction beyond ~sqlx~
