@@ -23,6 +23,10 @@ A full-featured example REST service using [`axum`], [`sqlx`], [`tokio`], and
     unused_import_braces,
     unused_qualifications
 )]
+#![cfg_attr(
+    debug_assertions,
+    allow(clippy::missing_panics_doc, clippy::missing_errors_doc)
+)]
 
 pub mod config;
 pub mod db;
