@@ -1,0 +1,18 @@
+receivers:
+  jaeger:
+    protocols:
+      thrift_compact:
+
+processors:
+  batch:
+
+exporters:
+  otlp:
+    endpoint: tempo:14268
+
+service:
+  pipelines:
+    traces:
+      receivers: [jaeger]
+      processors: [batch]
+      exporters: [otlp]
