@@ -6,7 +6,7 @@
     flake-compat.flake = false;
     flake-utils.url = "github:numtide/flake-utils";
     master.url = "nixpkgs/master";
-    nixpkgs.url = "nixpkgs/nixos-21.05";
+    nixpkgs.url = "nixpkgs/nixos-21.11";
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.flake-utils.follows = "flake-utils";
     rust-overlay.inputs.nixpkgs.follows = "unstable";
