@@ -1,10 +1,10 @@
 # https://github.com/LukeMathWalker/cargo-chef/tree/v0.1.31#how-to-use
 # https://github.com/LukeMathWalker/cargo-chef/tree/v0.1.31#pre-built-images
-FROM lukemathwalker/cargo-chef:latest-rust-1.55.0@sha256:e70c3dc65a557a5a862947de322f9ad1198abea1a7f208f6d16ce29ff58e5859 AS chef
+FROM lukemathwalker/cargo-chef:latest-rust-1.58.1-slim-buster@sha256:599bf734dc9332b41f853ab34abb84f2d335a048f68f40735fe1eeaf53a949e5 AS chef
 # Cache-bust when this file changes
 COPY rust-toolchain /
 # See also: /rust-toolchain
-RUN rustup toolchain update stable
+RUN rustup toolchain install 1.58.1
 WORKDIR /app
 
 FROM chef AS planner
