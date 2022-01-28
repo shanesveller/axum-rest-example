@@ -6,7 +6,7 @@ publish = false
 
 [dependencies]
 anyhow = "1.0.53"
-axum = { version = "^0.2.3", features = ["headers"] }
+axum = { version = "0.4.4", features = ["headers"] }
 base-x = "^0.2.8"
 chrono = { version = "^0.4.19", features = ["serde"] }
 config = { version = "^0.11.0", features = ["toml"], default-features = false }
@@ -18,8 +18,8 @@ serde = { version = "^1.0.129", features = ["derive"] }
 serde_json = "^1.0.66"
 thiserror = "1.0.30"
 tokio = { version = "1.16.1", features = ["macros", "rt-multi-thread", "signal"] }
-tower = { version = "^0.4.8", features = [] }
-tower-http = { version = "^0.1.1", features = ["trace"] }
+tower = { version = "0.4.11", features = [] }
+tower-http = { version = "0.2.1", features = ["trace"] }
 tracing = "0.1.29"
 tracing-opentelemetry = "0.16.0"
 tracing-subscriber = { version = "0.3.7", features = ["env-filter", "json"] }

@@ -7,18 +7,18 @@ use crate::{
 };
 use anyhow::Result;
 use axum::{
-    body::{BoxBody, Bytes, Full},
+    body::BoxBody,
     extract::{self, Extension, Json},
-    handler::{get, post},
-    http::{Request, Response, StatusCode},
-    response::{IntoResponse, Redirect},
+    http::{Request, StatusCode},
+    response::{IntoResponse, Redirect, Response},
+    routing::{get, post},
     AddExtensionLayer, Router, Server,
 };
 use hyper::Body;
 use serde_json::json;
 use sqlx::PgPool;
 use std::{
-    convert::{Infallible, TryInto},
+    convert::TryInto,
     net::{IpAddr, SocketAddr},
     time::Duration,
 };
@@ -37,11 +37,7 @@ enum AppError {
 }
 
 impl IntoResponse for AppError {
-    type Body = Full<Bytes>;
-
-    type BodyError = Infallible;
-
-    fn into_response(self) -> Response<Self::Body> {
+    fn into_response(self) -> Response {
         let (status, message) = match self {
             AppError::NewLinkError(_) => {
                 (StatusCode::UNPROCESSABLE_ENTITY, "could not create link")
