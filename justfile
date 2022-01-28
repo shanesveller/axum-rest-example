@@ -24,6 +24,12 @@ run-docker-all: release docker-migrate
 run-docker: release docker-migrate
   docker-compose up -d app
   docker-compose logs -f
+sweep:
+  cargo sweep -s -v
+  cargo build
+  cargo build --release
+  cargo test
+  cargo sweep -f -v
 test: test-migrate
   cargo test
 test-migrate:
