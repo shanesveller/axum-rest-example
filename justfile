@@ -27,8 +27,8 @@ run-docker: release docker-migrate
 test: test-migrate
   cargo test
 test-migrate:
-  sqlx -D $TEST_DATABASE_URL migrate run
+  sqlx migrate run -D $TEST_DATABASE_URL
 test-reset:
-  sqlx -D $TEST_DATABASE_URL database reset -y
+  sqlx database reset -y -D $TEST_DATABASE_URL
 watch:
   cargo watch --clear --postpone -x 'clippy --lib' -x 'test --lib -- --show-output' -x 'run'
