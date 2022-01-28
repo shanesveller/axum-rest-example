@@ -132,7 +132,7 @@ fn make_span(_request: &Request<Body>) -> Span {
 
 /// Internal helper for [`tower_http::trace::TraceLayer`] to emit a structured [`tracing::Span`] with specific recorded fields.
 ///
-/// Uses a `Loki`-friendly traceID that can correlate to `Tempo` distributed traces.
+/// Uses a `Loki`-friendly `traceID` that can correlate to `Tempo` distributed traces.
 fn emit_response_trace_with_id(response: &Response<BoxBody>, latency: Duration, span: &Span) {
     #[cfg(feature = "otel")]
     {
