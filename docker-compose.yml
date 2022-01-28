@@ -24,7 +24,8 @@ services:
     depends_on:
       - db
       - loki
-    image: axum-rest-example:latest
+    build: .
+    # image: axum-rest-example:latest
     init: true
     environment:
       APP_DATABASE__URL: "postgres://postgres:postgres@db/axum_rest_example"

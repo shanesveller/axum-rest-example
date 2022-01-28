@@ -14,7 +14,7 @@ migrate:
   sqlx migrate run
 release: migrate
   cargo sqlx prepare -- --lib
-  docker build -t axum-rest-example:latest .
+  docker-compose build app --progress plain
 reset:
   sqlx database reset -y
 run:
