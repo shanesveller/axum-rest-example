@@ -84,7 +84,10 @@
           rustfmt = rustTools.default;
         });
 
-        cargoArtifacts = craneLib.buildDepsOnly { inherit src; };
+        cargoArtifacts = craneLib.buildDepsOnly {
+          inherit src;
+          nativeBuildInputs = with pkgs; [ clang lld ];
+        };
 
         axum-rest-example = craneLib.buildPackage {
           inherit cargoArtifacts src;
@@ -93,7 +96,7 @@
 
         axum-rest-example-clippy = craneLib.cargoClippy {
           inherit cargoArtifacts src;
-          # nativeBuildInputs = with pkgs; [ clang lld ];
+          nativeBuildInputs = with pkgs; [ clang lld rustTools.default ];
         };
 
         app = flake-utils.lib.mkApp {
