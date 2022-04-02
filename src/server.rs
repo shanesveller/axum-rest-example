@@ -12,7 +12,7 @@ use axum::{
     http::{Request, StatusCode},
     response::{IntoResponse, Redirect, Response},
     routing::{get, post},
-    AddExtensionLayer, Router, Server,
+    Router, Server,
 };
 use hyper::Body;
 use serde_json::json;
@@ -167,7 +167,7 @@ pub async fn launch(config: &AppConfig) -> Result<()> {
         .route("/health", get(health_endpoint))
         .route("/v1/link", post(create_link))
         .route("/v1/links", get(list_links))
-        .layer(AddExtensionLayer::new(pool))
+        .layer(Extension(pool))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(make_span)
