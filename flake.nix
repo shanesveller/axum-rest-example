@@ -111,6 +111,8 @@
           nativeBuildInputs = [ rustTools.default ] ++ sharedInputs;
 
           NIX_PATH = "nixpkgs=${nixpkgs}:master=${inputs.master}";
+          PROTOC = "${pkgs.protobuf}/bin/protoc";
+          PROTOC_INCLUDE = "${pkgs.protobuf}/include";
           RUST_SRC_PATH = "${rustTools.rust-src}/lib/rustlib/src/rust/library";
         };
 
