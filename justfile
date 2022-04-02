@@ -14,7 +14,7 @@ migrate:
   sqlx migrate run
 release: migrate
   cargo sqlx prepare -- --lib
-  docker-compose build app --progress plain
+  docker-compose build --progress plain -- app
 reset:
   sqlx database reset -y
 run:
