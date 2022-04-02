@@ -88,6 +88,8 @@
           nativeBuildInputs = with pkgs; [ clang lld rustTools.default ];
         };
 
+        axum-rest-example-fmt = craneLib.cargoFmt { inherit src; };
+
         app = flake-utils.lib.mkApp {
           drv = self.packages."${system}".axum-rest-example;
         };
@@ -95,7 +97,10 @@
         defaultApp = app;
         apps.axum-rest-example = app;
 
-        checks = { inherit axum-rest-example axum-rest-example-clippy; };
+        checks = {
+          inherit axum-rest-example axum-rest-example-clippy
+            axum-rest-example-fmt;
+        };
 
         devShell = pkgs.mkShell {
           name = "axum-rest-example-nightly";
