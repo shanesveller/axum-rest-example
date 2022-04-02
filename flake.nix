@@ -110,7 +110,7 @@
           nativeBuildInputs = [ rustTools.default ] ++ sharedInputs;
 
           NIX_PATH = "nixpkgs=${nixpkgs}:master=${inputs.master}";
-          RUST_SRC_PATH = "${rustTools.rust}/lib/rustlib/src/rust/library";
+          RUST_SRC_PATH = "${rustTools.rust-src}/lib/rustlib/src/rust/library";
         };
 
         devShells.nightly = pkgs.mkShell {
