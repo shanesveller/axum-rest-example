@@ -5,6 +5,7 @@
 # Docker-specific
 **/target
 *.nix
+/.cargo
 .direnv
 .git
 /flake.lock
