@@ -30,19 +30,9 @@
 
         sharedInputs = with pkgs;
           [
-            cargo-asm
-            cargo-audit
-            cargo-bloat
-            cargo-cache
             cargo-deny
             cargo-edit
             cargo-expand
-            cargo-flamegraph
-            cargo-generate
-            cargo-geiger
-            cargo-make
-            cargo-release
-            cargo-sweep
             cargo-udeps
             cargo-watch
             cargo-whatfeatures
@@ -50,7 +40,6 @@
             git-cliff
             just
             lld
-            mdbook
             openssl.dev
             pkg-config
             zlib.dev
