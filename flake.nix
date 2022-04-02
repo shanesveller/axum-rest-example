@@ -82,6 +82,8 @@
           inherit cargoArtifacts src;
           # Tests are impure/stateful and dependent on Postgres
           doCheck = false;
+          # We don't need these artifacts to run or provide a Docker artifact
+          doInstallCargoArtifacts = false;
           nativeBuildInputs = with pkgs; [ clang lld ];
         };
 
@@ -144,19 +146,17 @@
           };
 
           # Uncomment to build Docker image without using a Docker daemon
-          # docker = pkgs.dockerTools.streamLayeredImage {
-          #   name = "my_app";
-          #   tag = "latest";
-          #   contents = with self.packages.x86_64-linux; [
-          #     my_app_web
-          #     my_app_cli
-          #   ];
-          #   config = {
-          #     Cmd =
-          #       [ "${self.packages.x86_64-linux.my_app_web}/bin/my_app_web" ];
-          #     Env = [ "RUST_LOG=debug" ];
-          #   };
-          # };
+          docker = pkgs.dockerTools.streamLayeredImage {
+            name = "axum-rest-example";
+            tag = "latest";
+            contents = with self.packages.x86_64-linux; [ axum-rest-example ];
+            config = {
+              Cmd = [
+                "${self.packages.x86_64-linux.axum-rest-example}/bin/axum-rest-example"
+              ];
+              Env = [ "RUST_LOG=debug" ];
+            };
+          };
 
           inherit axum-rest-example;
 
