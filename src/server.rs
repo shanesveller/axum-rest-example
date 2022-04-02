@@ -103,8 +103,8 @@ async fn visit_link(
     let mut conn = db.acquire().await?;
 
     Link::get_by_hash(&mut conn, &hash).await?.map_or_else(
-        || Ok(Redirect::temporary("/".parse().unwrap())),
-        |link| Ok(Redirect::temporary(link.destination.parse().unwrap())),
+        || Ok(Redirect::temporary("/")),
+        |link| Ok(Redirect::temporary(&link.destination)),
     )
 }
 
