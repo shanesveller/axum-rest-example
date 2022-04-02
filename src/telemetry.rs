@@ -5,9 +5,7 @@ use std::time::Duration;
 
 use anyhow::Result;
 #[cfg(feature = "otel")]
-use opentelemetry::sdk::Resource;
-#[cfg(feature = "otel")]
-use opentelemetry::KeyValue;
+use opentelemetry::{sdk::Resource, trace::TraceContextExt, KeyValue};
 #[cfg(feature = "otel")]
 use opentelemetry_otlp::{Protocol, WithExportConfig};
 use tracing_subscriber::{fmt::format::FmtSpan, layer::SubscriberExt, EnvFilter, Registry};
