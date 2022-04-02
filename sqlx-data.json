@@ -1,24 +1,28 @@
 {
   "db": "PostgreSQL",
   "23e708b95cd26e9b7561f3aee347267d3c5459f1fc6cee4cddceb6d440630a93": {
-    "query": "INSERT INTO links (id, destination, hash)\n            VALUES ($1, $2, $3)\n            RETURNING id, destination, hash\n            ",
     "describe": {
       "columns": [
         {
-          "ordinal": 0,
           "name": "id",
+          "ordinal": 0,
           "type_info": "Uuid"
         },
         {
-          "ordinal": 1,
           "name": "destination",
+          "ordinal": 1,
           "type_info": "Text"
         },
         {
-          "ordinal": 2,
           "name": "hash",
+          "ordinal": 2,
           "type_info": "Text"
         }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
       ],
       "parameters": {
         "Left": [
@@ -26,74 +30,70 @@
           "Text",
           "Text"
         ]
-      },
+      }
+    },
+    "query": "INSERT INTO links (id, destination, hash)\n            VALUES ($1, $2, $3)\n            RETURNING id, destination, hash\n            "
+  },
+  "a456a1513e3fbe0f849f44720bbced7783201b6d0e8648ce48733c198cd655e2": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "destination",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "hash",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
       "nullable": [
         false,
         false,
         false
-      ]
-    }
-  },
-  "a456a1513e3fbe0f849f44720bbced7783201b6d0e8648ce48733c198cd655e2": {
-    "query": "SELECT id, destination, hash FROM links WHERE hash = $1",
-    "describe": {
-      "columns": [
-        {
-          "ordinal": 0,
-          "name": "id",
-          "type_info": "Uuid"
-        },
-        {
-          "ordinal": 1,
-          "name": "destination",
-          "type_info": "Text"
-        },
-        {
-          "ordinal": 2,
-          "name": "hash",
-          "type_info": "Text"
-        }
       ],
       "parameters": {
         "Left": [
           "Text"
         ]
-      },
-      "nullable": [
-        false,
-        false,
-        false
-      ]
-    }
+      }
+    },
+    "query": "SELECT id, destination, hash FROM links WHERE hash = $1"
   },
   "ccca6f2d58b00f20bc048325112bd0c3b064b113765af87c7b30a9d36c7f7eec": {
-    "query": "SELECT id, destination, hash FROM links ORDER BY destination",
     "describe": {
       "columns": [
         {
-          "ordinal": 0,
           "name": "id",
+          "ordinal": 0,
           "type_info": "Uuid"
         },
         {
-          "ordinal": 1,
           "name": "destination",
+          "ordinal": 1,
           "type_info": "Text"
         },
         {
-          "ordinal": 2,
           "name": "hash",
+          "ordinal": 2,
           "type_info": "Text"
         }
       ],
-      "parameters": {
-        "Left": []
-      },
       "nullable": [
         false,
         false,
         false
-      ]
-    }
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "SELECT id, destination, hash FROM links ORDER BY destination"
   }
 }
