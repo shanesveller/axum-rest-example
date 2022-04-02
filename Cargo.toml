@@ -20,9 +20,9 @@ thiserror = "1.0.30"
 tokio = { version = "1.16.1", features = ["macros", "rt-multi-thread", "signal"] }
 tower = { version = "0.4.11", features = [] }
 tower-http = { version = "0.2.1", features = ["trace"] }
-tracing = "0.1.29"
-tracing-opentelemetry = "0.16.0"
-tracing-subscriber = { version = "0.3.7", features = ["env-filter", "json"] }
+tracing = "0.1.32"
+tracing-opentelemetry = "0.17.2"
+tracing-subscriber = { version = "0.3.10", features = ["env-filter", "json"] }
 url = { version = "^2.2.2", features = ["serde"] }
 uuid = { version = "^0.8.2", features = ["serde", "v4"] }
 

@@ -139,7 +139,7 @@ fn emit_response_trace_with_id(response: &Response<BoxBody>, latency: Duration, 
         // https://github.com/kube-rs/controller-rs/blob/b99ad0bfbf4ae75f03323bff2796572d4257bd96/src/telemetry.rs#L4-L8
         use opentelemetry::trace::TraceContextExt;
         use tracing_opentelemetry::OpenTelemetrySpanExt;
-        let trace_id = span.context().span().span_context().trace_id().to_hex();
+        let trace_id = span.context().span().span_context().trace_id().to_string();
         span.record("traceID", &field::display(&trace_id));
     }
 
