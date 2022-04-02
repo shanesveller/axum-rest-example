@@ -80,6 +80,8 @@
 
         axum-rest-example = craneLib.buildPackage {
           inherit cargoArtifacts src;
+          # Tests are impure/stateful and dependent on Postgres
+          doCheck = false;
           nativeBuildInputs = with pkgs; [ clang lld ];
         };
 
