@@ -10,24 +10,21 @@
     flake-compat.flake = false;
     flake-utils.url = "github:numtide/flake-utils";
     master.url = "nixpkgs/master";
-    nixpkgs.url = "nixpkgs/nixos-21.11";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.flake-utils.follows = "flake-utils";
-    rust-overlay.inputs.nixpkgs.follows = "unstable";
-    unstable.url = "nixpkgs/nixos-unstable";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs@{ self, flake-utils, nixpkgs, ... }:
     flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
       let
-        master = import inputs.master { inherit system; };
-        unstable = import inputs.unstable { inherit system; };
         pkgs = import nixpkgs {
           inherit system;
 
           overlays = [
             (import inputs.rust-overlay)
-            (final: prev: { inherit master unstable; })
+            (final: prev: { master = inputs.master.legacyPackages.${system}; })
           ];
         };
 
@@ -112,8 +109,7 @@
           name = "axum-rest-example-nightly";
           nativeBuildInputs = [ rustTools.default ] ++ sharedInputs;
 
-          NIX_PATH =
-            "nixpkgs=${nixpkgs}:unstable=${inputs.unstable}:master=${inputs.master}";
+          NIX_PATH = "nixpkgs=${nixpkgs}:master=${inputs.master}";
           RUST_SRC_PATH = "${rustTools.rust}/lib/rustlib/src/rust/library";
         };
 
@@ -126,7 +122,7 @@
         defaultPackage = axum-rest-example;
         packages = {
           inherit (pkgs.master) rust-analyzer sqlx-cli;
-          inherit (pkgs.unstable) sccache;
+          inherit (pkgs) sccache;
 
           cargo-outdated = pkgs.symlinkJoin {
             name = "cargo-outdated";
