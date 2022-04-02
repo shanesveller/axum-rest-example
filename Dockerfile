@@ -5,6 +5,10 @@ FROM lukemathwalker/cargo-chef:0.1.35-rust-1.59.0-slim-buster@sha256:b9809fc619b
 COPY rust-toolchain /
 # See also: /rust-toolchain
 RUN rustup toolchain install 1.59.0
+RUN apt-get update -qq \
+    && apt-get install --no-install-recommends -y \
+      protobuf-compiler \
+    && apt-get clean
 WORKDIR /app
 
 FROM chef AS planner
