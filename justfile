@@ -5,8 +5,8 @@ build:
   cargo build
 docker-migrate:
   docker-compose up -d db
-  sqlx -D $DOCKER_DATABASE_URL database create
-  sqlx -D $DOCKER_DATABASE_URL migrate run
+  sqlx database create -D $DOCKER_DATABASE_URL
+  sqlx migrate run -D $DOCKER_DATABASE_URL
 lint:
   cargo clippy --lib
 migrate:
