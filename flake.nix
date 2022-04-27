@@ -122,7 +122,7 @@
           RUSTFLAGS = "-Z macro-backtrace";
         };
 
-        defaultPackage = axum-rest-example;
+        defaultPackages.default = axum-rest-example;
         packages = {
           inherit (pkgs.master) rust-analyzer sqlx-cli;
           inherit (pkgs) sccache;
