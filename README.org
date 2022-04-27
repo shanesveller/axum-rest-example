@@ -65,12 +65,12 @@ Hot iteration loop using cargo-watch
 cargo watch -x 'clippy --lib' -x 'test --lib' -x run
 #+end_src
 *** Nix with Direnv
-Requires a recent Nix (2.4pre...) with Flakes support, plus nix-direnv.
+Requires a recent Nix ([[https://nixos.org/manual/nix/stable/release-notes/rl-2.7.html][2.7]]+) with Flakes support, plus nix-direnv.
 #+begin_src shell
 direnv allow .
 #+end_src
 *** Nix without Direnv
-Requires a recent Nix (2.4pre...) with Flakes support.
+Requires a recent Nix ([[https://nixos.org/manual/nix/stable/release-notes/rl-2.7.html][2.7]]+) with Flakes support.
 #+begin_src shell
 nix develop
 export DATABASE_URL=...
