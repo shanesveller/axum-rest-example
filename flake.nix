@@ -106,7 +106,7 @@
             axum-rest-example-fmt;
         };
 
-        devShell = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           name = "axum-rest-example-nightly";
           nativeBuildInputs = [ rustTools.default ] ++ sharedInputs;
 
@@ -164,7 +164,7 @@
 
           gcroot = pkgs.linkFarmFromDrvs "axum-rest-example"
             (with self.outputs; [
-              devShell."${system}".inputDerivation
+              devShells."${system}".default.inputDerivation
               devShells."${system}".nightly.inputDerivation
             ]);
         };
