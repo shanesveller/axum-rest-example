@@ -2,7 +2,7 @@
 # https://github.com/LukeMathWalker/cargo-chef/tree/v0.1.35#pre-built-images
 FROM lukemathwalker/cargo-chef:0.1.35-rust-1.59.0-slim-buster@sha256:b9809fc619b03e8fed8f235ea71408d40df86d7ab3d9586ef31c1a749bceac4f AS chef
 # Cache-bust when this file changes
-COPY rust-toolchain /
+COPY rust-toolchain.toml /
 # See also: /rust-toolchain
 RUN rustup toolchain install 1.59.0
 RUN apt-get update -qq \

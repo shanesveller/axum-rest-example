@@ -60,8 +60,10 @@
             valgrind
           ];
 
-        rustChannel =
-          pkgs.lib.removeSuffix "\n" (builtins.readFile ./rust-toolchain);
+        toolchainConfig =
+          builtins.fromTOML (builtins.readFile ./rust-toolchain.toml);
+
+        rustChannel = toolchainConfig.toolchain.channel;
 
         rustTools = pkgs.rust-bin.stable.${rustChannel};
 
