@@ -28,7 +28,7 @@ services:
     # image: axum-rest-example:latest
     init: true
     environment:
-      APP_DATABASE__URL: "postgres://postgres:postgres@db/axum_rest_example"
+      APP__DATABASE__URL: "postgres://postgres:postgres@db/axum_rest_example"
       APP_ENV: production
       RUST_LOG: axum_rest_example=debug,tower_http=debug,info
     ports:

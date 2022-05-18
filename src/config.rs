@@ -31,19 +31,15 @@ pub struct AppConfig {
 
 impl AppConfig {
     pub fn new() -> Result<Self, ConfigError> {
-        let mut config = Config::default();
-
-        config.merge(File::with_name("config/default"))?;
-
         let env = std::env::var("APP_ENV").unwrap_or_else(|_| "development".into());
 
-        config.merge(File::with_name(&format!("config/{}", env)).required(false))?;
+        let builder = Config::builder()
+            .add_source(File::with_name("config/default"))
+            .add_source(File::with_name(&format!("config/{}", env)).required(false))
+            .add_source(File::with_name("config/local").required(false))
+            .add_source(Environment::with_prefix("APP").separator("__"));
 
-        config.merge(File::with_name("config/local").required(false))?;
-
-        config.merge(Environment::with_prefix("APP").separator("__"))?;
-
-        config.try_into()
+        builder.build()?.try_deserialize()
     }
 }
 
@@ -144,17 +140,21 @@ pub struct TelemetryConfig {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use secrecy::ExposeSecret;
 
     #[test]
     fn test_env_prefix() {
-        std::env::set_var("APP_TELEMETRY__OPENTELEMETRY", "true");
-        std::env::set_var("APP_TELEMETRY__LOG_FORMAT", "json");
+        let database_url = "postgres://username:password@some-host/some-db";
+        std::env::set_var("APP__DATABASE__URL", database_url);
+        std::env::set_var("APP__TELEMETRY__OPENTELEMETRY", "true");
+        std::env::set_var("APP__TELEMETRY__LOG_FORMAT", "json");
         let config = AppConfig::new().unwrap();
 
         assert!(config.telemetry.opentelemetry);
+        assert_eq!(config.database.url.expose_secret(), database_url);
         assert_eq!(config.telemetry.log_format, LogFormat::Json);
 
-        std::env::remove_var("APP_TELEMETRY__OPENTELEMETRY");
-        std::env::remove_var("APP_TELEMETRY__LOG_FORMAT");
+        std::env::remove_var("APP__TELEMETRY__OPENTELEMETRY");
+        std::env::remove_var("APP__TELEMETRY__LOG_FORMAT");
     }
 }
