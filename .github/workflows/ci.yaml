@@ -1,0 +1,87 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+      - features/github-actions-ci
+
+jobs:
+  lint:
+    name: Linters
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          components: clippy, rustfmt
+          profile: minimal
+          toolchain: 1.60.0
+      - name: Check rustfmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: '--check'
+      - name: Auto-cache Rust artifacts
+        uses: Swatinem/rust-cache@v1.3.0
+      - name: Check Clippy lints
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: '--all-features --no-deps -- -D warnings'
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - '5432:5432'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.60.0
+      - name: Auto-cache Rust artifacts
+        uses: Swatinem/rust-cache@v1.3.0
+      - name: Restore sqlx-cli
+        uses: actions/cache@v3
+        id: cache-sqlx-cli
+        with:
+          path: |
+            ~/.cargo/bin/cargo-sqlx
+            ~/.cargo/bin/sqlx
+          key: ${{ runner.os }}-sqlx-cli-0.5.11
+      - name: Install sqlx-cli
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: >-
+            --no-default-features
+            --features 'postgres,rustls'
+            --locked
+            --version 0.5.11
+            sqlx-cli
+        if: steps.cache-sqlx-cli.outputs.cache-hit != 'true'
+      - name: Reset test database
+        run: sqlx database reset -y --database-url $TEST_DATABASE_URL
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/axum_rest_example_test
+      - name: Test all features
+        run: cargo test --all-features
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/axum_rest_example_test
