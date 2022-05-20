@@ -95,7 +95,7 @@ services:
   tempo:
     # https://hub.docker.com/r/grafana/tempo/tags?page=1&ordering=last_updated
     # https://github.com/grafana/tempo/releases/latest
-    image: grafana/tempo:1.0.1
+    image: grafana/tempo:1.4.1
     depends_on:
       - loki
     command: [ "-config.file=/etc/tempo.yaml" ]
