@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: fantasy_nerd
       POSTGRES_PASSWORD: postgres
-    image: postgres:13-alpine
+    image: postgres:14-alpine
     depends_on:
       - loki
     ports:
@@ -43,7 +43,7 @@ services:
   grafana:
     # https://hub.docker.com/r/grafana/grafana/tags?page=1&ordering=last_updated
     # https://github.com/grafana/grafana/releases/latest
-    image: grafana/grafana:8.5.2
+    image: grafana/grafana:8.5.3
     depends_on:
       - loki
     volumes:
@@ -62,7 +62,7 @@ services:
   loki:
     # https://hub.docker.com/r/grafana/loki/tags?page=1&ordering=last_updated
     # https://github.com/grafana/loki/releases/latest
-    image: grafana/loki:2.3.0
+    image: grafana/loki:2.5.0
     command: [ "-config.file=/etc/loki/local-config.yaml" ]
     ports:
       - "3100:3100"                                   # loki needs to be exposed so it receives logs
@@ -79,7 +79,7 @@ services:
   prometheus:
     # https://hub.docker.com/r/prom/prometheus/tags?page=1&ordering=last_updated
     # https://github.com/prometheus/prometheus/releases/latest
-    image: prom/prometheus:v2.29.2
+    image: prom/prometheus:v2.35.0
     command: [ "--config.file=/etc/prometheus.yaml" ]
     depends_on:
       - loki
@@ -95,7 +95,7 @@ services:
   tempo:
     # https://hub.docker.com/r/grafana/tempo/tags?page=1&ordering=last_updated
     # https://github.com/grafana/tempo/releases/latest
-    image: grafana/tempo:1.0.1
+    image: grafana/tempo:1.4.1
     depends_on:
       - loki
     command: [ "-config.file=/etc/tempo.yaml" ]
