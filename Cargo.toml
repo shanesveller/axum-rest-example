@@ -10,7 +10,7 @@ axum = { version = "0.5.6", features = ["headers"] }
 base-x = "0.2.10"
 chrono = { version = "^0.4.19", features = ["serde"] }
 config = { version = "0.13.1", features = ["toml"], default-features = false }
-hyper = { version = "0.14.18", features = [] }
+hyper = { version = "0.14.19", features = [] }
 opentelemetry = { version = "0.17.0", optional = true, features = ["rt-tokio", "metrics", "trace"] }
 opentelemetry-otlp = { version = "0.10.0", optional = true, features = ["metrics", "tls", "trace"], default-features = false }
 secrecy = { version = "^0.8.0", features = ["serde"] }
