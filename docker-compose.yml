@@ -43,7 +43,7 @@ services:
   grafana:
     # https://hub.docker.com/r/grafana/grafana/tags?page=1&ordering=last_updated
     # https://github.com/grafana/grafana/releases/latest
-    image: grafana/grafana:8.5.3
+    image: grafana/grafana:8.5.4
     depends_on:
       - loki
     volumes:
