@@ -1,10 +1,10 @@
 # https://github.com/LukeMathWalker/cargo-chef/tree/v0.1.35#how-to-use
 # https://github.com/LukeMathWalker/cargo-chef/tree/v0.1.35#pre-built-images
-FROM lukemathwalker/cargo-chef:0.1.35-rust-1.60.0-slim-buster@sha256:44f79abd3eb42d75d65af521911c68da3cb6a53c9192813e471f5c220f2a951d AS chef
+FROM lukemathwalker/cargo-chef:0.1.35-rust-1.61.0-slim-buster@sha256:3a0a050ab6260c591b1865c1bd41abd2fd7df8b0263e93c8639ba7358ddeb7cf AS chef
 # Cache-bust when this file changes
 COPY rust-toolchain.toml /
 # See also: /rust-toolchain
-RUN rustup toolchain install 1.60.0
+RUN rustup toolchain install 1.61.0
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
       protobuf-compiler \
