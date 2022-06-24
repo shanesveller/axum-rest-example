@@ -7,7 +7,7 @@ publish = false
 [dependencies]
 anyhow = "1.0.57"
 axum = { version = "0.5.7", features = ["headers"] }
-base-x = "0.2.10"
+base-x = "0.2.11"
 chrono = { version = "^0.4.19", features = ["serde"] }
 config = { version = "0.13.1", features = ["toml"], default-features = false }
 hyper = { version = "0.14.19", features = [] }
