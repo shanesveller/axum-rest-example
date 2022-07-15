@@ -79,7 +79,7 @@ services:
   prometheus:
     # https://hub.docker.com/r/prom/prometheus/tags?page=1&ordering=last_updated
     # https://github.com/prometheus/prometheus/releases/latest
-    image: prom/prometheus:v2.36.2
+    image: prom/prometheus:v2.37.0
     command: [ "--config.file=/etc/prometheus.yaml" ]
     depends_on:
       - loki
