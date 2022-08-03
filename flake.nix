@@ -19,6 +19,11 @@
   outputs = inputs@{ self, flake-utils, nixpkgs, ... }:
     flake-utils.lib.eachSystem [ "aarch64-darwin" "x86_64-darwin" "x86_64-linux" ] (system:
       let
+        maybeRosetta = if system == "aarch64-darwin" then
+          nixpkgs.legacyPackages.x86_64-darwin
+        else
+          nixpkgs.legacyPackages.${system};
+
         pkgs = import nixpkgs {
           inherit system;
 
@@ -34,7 +39,7 @@
             cargo-edit
             cargo-expand
             cargo-udeps
-            cargo-watch
+            maybeRosetta.cargo-watch
             cargo-whatfeatures
             clang
             git-cliff
