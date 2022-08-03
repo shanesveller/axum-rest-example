@@ -6,7 +6,7 @@ publish = false
 
 [dependencies]
 anyhow = "1.0.59"
-axum = { version = "0.5.9", features = ["headers"] }
+axum = { version = "0.5.13", features = ["headers"] }
 base-x = "0.2.11"
 chrono = { version = "^0.4.19", features = ["serde"] }
 config = { version = "0.13.1", features = ["toml"], default-features = false }
