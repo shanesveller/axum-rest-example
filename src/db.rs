@@ -9,7 +9,7 @@ use sqlx::{pool::PoolOptions, PgPool};
 /// [`AppConfig`] to determine connection/authentication details
 pub(crate) async fn new_pool(config: &AppConfig) -> sqlx::Result<PgPool> {
     PoolOptions::new()
-        .connect_timeout(Duration::from_secs(config.database.connect_timeout_seconds))
+        .acquire_timeout(Duration::from_secs(config.database.connect_timeout_seconds))
         .max_connections(config.database.max_connections)
         // TODO: CPU core count and/or test thread count?
         .min_connections(config.database.min_connections)
