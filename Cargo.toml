@@ -5,7 +5,7 @@ edition = "2018"
 publish = false
 
 [dependencies]
-anyhow = "1.0.58"
+anyhow = "1.0.59"
 axum = { version = "0.5.9", features = ["headers"] }
 base-x = "0.2.11"
 chrono = { version = "^0.4.19", features = ["serde"] }
@@ -16,7 +16,7 @@ opentelemetry-otlp = { version = "0.10.0", optional = true, features = ["metrics
 secrecy = { version = "^0.8.0", features = ["serde"] }
 serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1.0.81"
-thiserror = "1.0.31"
+thiserror = "1.0.32"
 tokio = { version = "1.19.2", features = ["macros", "rt-multi-thread", "signal"] }
 tower = { version = "0.4.13", features = [] }
 tower-http = { version = "0.3.4", features = ["trace"] }
