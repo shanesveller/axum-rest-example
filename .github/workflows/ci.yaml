@@ -19,7 +19,7 @@ jobs:
         with:
           components: clippy, rustfmt
           profile: minimal
-          toolchain: 1.61.0
+          toolchain: 1.62.1
       - name: Check rustfmt
         uses: actions-rs/cargo@v1
         with:
@@ -55,7 +55,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: 1.61.0
+          toolchain: 1.62.1
       - name: Auto-cache Rust artifacts
         uses: Swatinem/rust-cache@v1.4.0
       - name: Restore sqlx-cli

@@ -4,7 +4,7 @@ FROM lukemathwalker/cargo-chef:0.1.35-rust-1.61.0-slim-buster@sha256:3a0a050ab62
 # Cache-bust when this file changes
 COPY rust-toolchain.toml /
 # See also: /rust-toolchain
-RUN rustup toolchain install 1.61.0
+RUN rustup toolchain install 1.62.1
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
       protobuf-compiler \
