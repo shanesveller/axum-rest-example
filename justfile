@@ -3,6 +3,9 @@ export DOCKER_DATABASE_URL := "postgresql://postgres:postgres@localhost:15432/ax
 
 build:
   cargo build
+docker-clean:
+  docker plugin disable loki --force || true
+  docker-compose down --rmi local --volumes
 docker-migrate:
   docker-compose up -d db
   sqlx database create -D $DOCKER_DATABASE_URL
