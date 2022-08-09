@@ -1,6 +1,6 @@
 # https://github.com/LukeMathWalker/cargo-chef/tree/v0.1.35#how-to-use
 # https://github.com/LukeMathWalker/cargo-chef/tree/v0.1.35#pre-built-images
-FROM lukemathwalker/cargo-chef:0.1.39-rust-1.62.1-slim-buster@sha256:c39a6552970fd4d24f69c659f7edfb1287f9fcb42212692a97157fd5bd2c3f2d AS chef
+FROM lukemathwalker/cargo-chef:0.1.39-rust-1.62.1-slim-buster@sha256:4378d3fa1a0e689d3373dae3a6ba23a0cd54e01ae6abe86796ca0952e2a47ef5 AS chef
 # Cache-bust when this file changes
 COPY rust-toolchain.toml /
 # See also: /rust-toolchain
