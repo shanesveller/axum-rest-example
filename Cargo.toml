@@ -27,7 +27,7 @@ url = { version = "^2.2.2", features = ["serde"] }
 uuid = { version = "1.1.2", features = ["serde", "v4"] }
 
 [dependencies.sqlx]
-version = "=0.6.0"
+version = "=0.6.1"
 features = [
     "chrono",
     "migrate",
