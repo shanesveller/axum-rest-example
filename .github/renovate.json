@@ -1,16 +1,6 @@
 {
   "extends": [
-    "config:base"
-  ],
-  "packageRules": [
-    {
-      "matchManagers": ["dockerfile"],
-      "matchPackageNames": ["lukemathwalker/cargo-chef"],
-      "extends": ["schedule:weekly"]
-    }
-  ],
-  "schedule": [
-    "after 6pm and before 9pm on friday",
-    "every weekend"
+    "config:base",
+    "schedule:monthly"
   ]
 }
