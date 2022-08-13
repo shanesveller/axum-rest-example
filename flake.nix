@@ -105,8 +105,8 @@
           drv = self.packages."${system}".axum-rest-example;
         };
       in {
-        defaultApp = app;
         apps.axum-rest-example = app;
+        apps.default = app;
 
         checks = {
           inherit axum-rest-example axum-rest-example-clippy
@@ -129,7 +129,6 @@
           RUSTFLAGS = "-Z macro-backtrace";
         };
 
-        defaultPackages.default = axum-rest-example;
         packages = {
           inherit (pkgs.master) rust-analyzer sqlx-cli;
           inherit (pkgs) sccache;
@@ -153,6 +152,8 @@
                 --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.clang pkgs.lld ]}
             '';
           };
+
+          default = axum-rest-example;
 
           # Uncomment to build Docker image without using a Docker daemon
           docker = pkgs.dockerTools.streamLayeredImage {
