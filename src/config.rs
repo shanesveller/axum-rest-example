@@ -107,7 +107,7 @@ impl Default for HttpConfig {
 
 /// Available, named presets for logging style, corresponding closely to
 /// [`mod@tracing_subscriber::fmt`]'s available choices.
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum LogFormat {
     Full,
