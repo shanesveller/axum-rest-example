@@ -65,19 +65,14 @@
             valgrind
           ];
 
-        toolchainConfig =
-          builtins.fromTOML (builtins.readFile ./rust-toolchain.toml);
-
-        rustChannel = toolchainConfig.toolchain.channel;
-
-        rustTools = pkgs.rust-bin.stable.${rustChannel};
+        rustTools = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
 
         src = ./.;
 
         craneLib = (inputs.crane.mkLib pkgs).overrideScope' (final: prev: {
-          rustc = rustTools.default;
-          cargo = rustTools.default;
-          rustfmt = rustTools.default;
+          rustc = rustTools;
+          cargo = rustTools;
+          rustfmt = rustTools;
         });
 
         cargoArtifacts = craneLib.buildDepsOnly {
@@ -96,7 +91,7 @@
 
         axum-rest-example-clippy = craneLib.cargoClippy {
           inherit cargoArtifacts src;
-          nativeBuildInputs = with pkgs; [ clang lld rustTools.default ];
+          nativeBuildInputs = with pkgs; [ clang lld rustTools ];
         };
 
         axum-rest-example-fmt = craneLib.cargoFmt { inherit src; };
@@ -115,12 +110,12 @@
 
         devShells.default = pkgs.mkShell {
           name = "axum-rest-example-nightly";
-          nativeBuildInputs = [ rustTools.default ] ++ sharedInputs;
+          nativeBuildInputs = [ rustTools ] ++ sharedInputs;
 
           NIX_PATH = "nixpkgs=${nixpkgs}:master=${inputs.master}";
           PROTOC = "${pkgs.protobuf}/bin/protoc";
           PROTOC_INCLUDE = "${pkgs.protobuf}/include";
-          RUST_SRC_PATH = "${rustTools.rust-src}/lib/rustlib/src/rust/library";
+          RUST_SRC_PATH = "${rustTools}/lib/rustlib/src/rust/library";
         };
 
         devShells.nightly = pkgs.mkShell {
@@ -145,7 +140,7 @@
 
           clippy = pkgs.symlinkJoin {
             name = "clippy";
-            paths = [ pkgs.clang rustTools.clippy pkgs.lld ];
+            paths = [ pkgs.clang rustTools pkgs.lld ];
             buildInputs = [ pkgs.makeWrapper ];
             postBuild = ''
               wrapProgram $out/bin/cargo-clippy \
