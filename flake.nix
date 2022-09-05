@@ -5,7 +5,7 @@
     crane.url = "github:ipetkov/crane";
     crane.inputs.flake-compat.follows = "flake-compat";
     crane.inputs.nixpkgs.follows = "nixpkgs";
-    crane.inputs.utils.follows = "flake-utils";
+    crane.inputs.flake-utils.follows = "flake-utils";
     flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
     flake-utils.url = "github:numtide/flake-utils";
