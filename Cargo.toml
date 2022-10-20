@@ -5,7 +5,7 @@ edition = "2018"
 publish = false
 
 [dependencies]
-anyhow = "1.0.61"
+anyhow = "1.0.66"
 axum = { version = "0.5.15", features = ["headers"] }
 base-x = "0.2.11"
 chrono = { version = "^0.4.22", features = ["serde"] }
