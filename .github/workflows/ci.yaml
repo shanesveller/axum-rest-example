@@ -26,7 +26,7 @@ jobs:
           command: fmt
           args: '--check'
       - name: Auto-cache Rust artifacts
-        uses: Swatinem/rust-cache@v2.0.0
+        uses: Swatinem/rust-cache@v2.1.0
       - name: Check Clippy lints
         uses: actions-rs/clippy-check@v1
         with:
@@ -57,7 +57,7 @@ jobs:
           profile: minimal
           toolchain: 1.62.1
       - name: Auto-cache Rust artifacts
-        uses: Swatinem/rust-cache@v2.0.0
+        uses: Swatinem/rust-cache@v2.1.0
       - name: Restore sqlx-cli
         uses: actions/cache@v3
         id: cache-sqlx-cli
